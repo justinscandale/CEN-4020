@@ -1,31 +1,54 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-const userSchema = mongoose.Schema({
-    name: {
-        type: String,
-        required: [true, 'Please add a name']
-    },
-    
-    email: {
-        type: String,
-        required: [true, 'Please add an email'],
-        unique: true 
-    },
+// Base User Schema
+const userSchema = new mongoose.Schema({
+  userID: {
+    type: Number,
+    required: true,
+    unique: true
+  },
+  firstName: {
+    type: String,
+    required: true
+  },
+  lastName: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  password: {
+    type: String,
+    required: true
+  },
+  role: {
+    type: String,
+    enum: ['employee', 'supervisor'],
+    required: true
+  }
+});
 
-    status: {
-        type: String,
-        enum: ['user', 'admin'],
-        default: 'user',
-        required: [true, 'Please add a status']
-    },
+// Employee Schema
+const employeeSchema = new mongoose.Schema({
+  department: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Department',
+    required: true
+  }
+});
 
-    password: {
-        type: String,
-        required: [true, 'Please add a password']
-    },
-}, 
-{
-    timestamps: true
-})
+// Supervisor Schema
+const supervisorSchema = new mongoose.Schema({});
 
-module.exports = mongoose.model('User', userSchema)
+const User = mongoose.model('User', userSchema);
+const Employee = User.discriminator('Employee', employeeSchema);
+const Supervisor = User.discriminator('Supervisor', supervisorSchema);
+
+module.exports = {
+  User,
+  Employee,
+  Supervisor
+};
