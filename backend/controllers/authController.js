@@ -23,13 +23,17 @@ const registerEmployee = asyncHandler(async (req, res) => {
         throw new Error('User already exists');
     }
 
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
     // Create employee
     const employee = await Employee.create({
         userID: Math.floor(100000 + Math.random() * 900000), // 6-digit user ID
         firstName,
         lastName,
         email,
-        password,
+        password: hashedPassword,
         role: 'employee',
         department: departmentId
     });
