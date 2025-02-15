@@ -9,7 +9,7 @@ const receiptRoutes = require("./routes/receiptRoutes");
 const app = express();
 
 // Middleware
-app.use(cors()); // Add this line
+app.use(cors()); 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
