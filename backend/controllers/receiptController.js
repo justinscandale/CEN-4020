@@ -13,7 +13,6 @@ const getReceipts = asyncHandler(async (req, res) => {
 // @route POST /api/receipts/create
 // @access Private
 const setReceipt = asyncHandler(async (req, res) => {
-    console.log(req.body);
     const { date, items, total } = req.body;
     const user_id = req.user.id;
 
