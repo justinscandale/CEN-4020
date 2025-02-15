@@ -1,9 +1,7 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
-  const navigate = useNavigate();
-
   return (
     <nav style={styles.nav}>
       <div style={styles.logo}>CEN-4020</div>
@@ -16,6 +14,9 @@ const Header = () => {
         </Link>
         <Link to="/register" style={styles.link}>
           <button style={styles.button}>Register</button>
+        </Link>
+        <Link to="/receipts" style={styles.link}>
+          <button style={styles.button}>Review Receipts</button>
         </Link>
       </div>
     </nav>

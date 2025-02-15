@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const receiptSchema = mongoose.Schema({
     
@@ -41,5 +41,3 @@ const receiptSchema = mongoose.Schema({
 {
     timestamps: true
 })
-
-module.exports = mongoose.model('Receipt', receiptSchema)
