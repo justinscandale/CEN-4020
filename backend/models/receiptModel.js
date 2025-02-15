@@ -3,8 +3,8 @@ const mongoose = require('mongoose')
 const receiptSchema = mongoose.Schema({
     
     date: {
-    type: Date,
-    required: [true, 'Please add a date']
+        type: Date,
+        required: [true, 'Please add a date']
     },
     
     items: [{
@@ -28,9 +28,14 @@ const receiptSchema = mongoose.Schema({
     },
     
     user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+
+    total: {
+        type: Number,
+        required: [true, 'Please add a total']
     }
 }, 
 {
