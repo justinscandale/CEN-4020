@@ -10,22 +10,22 @@ const getReceipts = asyncHandler(async (req, res) => {
 });
 
 // @desc Create New Receipt
-// @route POST /api/receipts
+// @route POST /api/receipts/create
 // @access Private
 const setReceipt = asyncHandler(async (req, res) => {
-    const { date, items, creditCardNumber } = req.body;
+    const { date, items, total } = req.body;
     const user_id = req.user.id;
 
     // Check if essential fields are provided
-    if (!date || !items || !creditCardNumber) {
+    if (!date || !items || !total) {
         res.status(400);
-        throw new Error('Missing required fields: date, items, or creditCardNumber');
+        throw new Error('Missing required fields: date, items, or total');
     }
 
     const receipt = await Receipt.create({
         date,
         items,
-        creditCardNumber,
+        total,
         user: user_id
     });
 

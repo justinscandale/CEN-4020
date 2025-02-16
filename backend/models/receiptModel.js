@@ -1,43 +1,43 @@
 const mongoose = require('mongoose');
 
 const receiptSchema = mongoose.Schema({
-  date: {
-    type: Date,
-    required: [true, 'Please add a date']
-  },
-  
-  items: [{
-    name: {
-      type: String,
-      required: [true, 'Please add an item name']
+    
+    date: {
+        type: Date,
+        required: [true, 'Please add a date']
     },
-    price: {
-      type: Number,
-      required: [true, 'Please add an item price']
+    
+    items: [{
+        name: {
+            type: String,
+            required: [true, 'Please add an item name']
+        },
+        price: {
+            type: Number,
+            required: [true, 'Please add an item price']
+        },
+        quantity: {
+            type: Number,
+            required: [true, 'Please add an item quantity']
+        }
+    }],
+    
+    approval: {
+        type: Boolean,
+        default: false,
     },
-    quantity: {
-      type: Number,
-      required: [true, 'Please add an item quantity']
+    
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+
+    total: {
+        type: Number,
+        required: [true, 'Please add a total']
     }
-  }],
-  
-  approval: {
-    type: Boolean,
-    default: false
-  },
-  
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-
-  creditCardNumber: {
-    type: String, 
-    required: true
-  }
-}, {
-  timestamps: true
-});
-
-module.exports = mongoose.model('Receipt', receiptSchema);
+}, 
+{
+    timestamps: true
+})
