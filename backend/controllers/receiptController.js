@@ -1,5 +1,7 @@
 const asyncHandler = require('express-async-handler');
-const Receipt = require('../models/receiptModel');
+const {Receipt, categories, defaultSubcategories} = require('../models/receiptModel');
+const imagekit = require('../config/imagekit');
+
 
 // @desc Get All Receipts
 // @route GET /api/receipts
@@ -13,27 +15,64 @@ const getReceipts = asyncHandler(async (req, res) => {
 // @route POST /api/receipts/create
 // @access Private
 const setReceipt = asyncHandler(async (req, res) => {
-    const { date, items, total } = req.body;
+    const { date, total, store, category, subcategory } = req.body;
+    const items = JSON.parse(req.body.items);
+    const image = req.file;
     const user_id = req.user.id;
 
-    // Check if essential fields are provided
-    if (!date || !items || !total) {
+    // Validate required fields
+    if (!date || !items || !total || !store || !category || !subcategory) {
+        console.log(date, items, total, store, category, subcategory);
         res.status(400);
-        throw new Error('Missing required fields: date, items, or total');
+        throw new Error('Missing required fields');
     }
 
-    const receipt = await Receipt.create({
-        date,
-        items,
-        total,
-        user: user_id
-    });
-
-    if (receipt) {
-        res.status(200).json(receipt);
-    } else {
+    // Validate category
+    if (!Object.values(categories).includes(category)) {
         res.status(400);
-        throw new Error('Invalid receipt data');
+        throw new Error('Invalid category');
+    }
+
+    // Validate items structure
+    if (!Array.isArray(items) || items.length === 0) {
+        res.status(400);
+        throw new Error('Items must be a non-empty array');
+    }
+
+    for (const item of items) {
+        if (!item.name || !item.price || !item.quantity) {
+            res.status(400);
+            throw new Error('Each item must have name, price, and quantity');
+        }
+    }
+
+    try {
+        const uploadResponse = await new Promise((resolve, reject) => {
+            imagekit.upload({
+                file: image.buffer,
+                fileName: `receipt-${Date.now()}`,
+                folder: '/receipts',
+            }, (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+            });
+        });
+
+        const receipt = await Receipt.create({
+            date,
+            items,
+            total,
+            store,
+            category,
+            subcategory,
+            user: user_id,
+            image: uploadResponse.url
+        });
+
+        res.status(201).json(receipt);
+    } catch (error) {
+        res.status(500);
+        throw new Error('Error processing receipt: ' + error.message);
     }
 });
 
@@ -42,19 +81,35 @@ const setReceipt = asyncHandler(async (req, res) => {
 // @access Private
 const deleteReceipt = asyncHandler(async (req, res) => {
     const receipt = await Receipt.findById(req.params.id);
-    if (receipt) {
-        if (receipt.user.toString() === req.user.id || req.user.status === 'admin') {
-            await Receipt.findByIdAndDelete(req.params.id);
-            res.status(200).json({ id: req.params.id });
-        }
-    } else {
-        res.status(400);
+    
+    if (!receipt) {
+        res.status(404);
         throw new Error('Receipt not found');
     }
+
+    // Check user owns the receipt or is admin
+    if (receipt.user.toString() !== req.user.id && req.user.role !== 'supervisor') {
+        res.status(403);
+        throw new Error('Not authorized');
+    }
+
+    await Receipt.findByIdAndDelete(req.params.id);
+    res.status(200).json({ id: req.params.id });
+});
+
+// @desc Get Categories and Subcategories
+// @route GET /api/receipts/categories
+// @access Private
+const getCategories = asyncHandler(async (req, res) => {
+    res.status(200).json({
+        categories,
+        subcategories: defaultSubcategories
+    });
 });
 
 module.exports = {
     getReceipts,
     setReceipt,
-    deleteReceipt
+    deleteReceipt,
+    getCategories,
 };

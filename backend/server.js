@@ -15,7 +15,6 @@ app.use(express.urlencoded({ extended: false }));
 
 // Enable CORS for all routes
 app.use(cors({
-  origin: "http://localhost:3000",
   methods: ["GET", "POST", "DELETE", "PUT"],
   credentials: true,
 }));

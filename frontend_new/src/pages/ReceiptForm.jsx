@@ -1,12 +1,28 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, use } from "react";
 import Tesseract from "tesseract.js";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function ReceiptForm() {
+  const { user } = useAuth();
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/");
+    }
+  }, [user, navigate]);
+
   const [receiptData, setReceiptData] = useState({
     date: "",
     items: [{ name: "", price: "", quantity: "" }],
     store: "",
-    creditCardNumber: "",
+    category: "",
+    subcategory: "",
+    customSubcategory: "",
+    total: 0,
   });
 
   const [total, setTotal] = useState(0);
@@ -15,6 +31,30 @@ function ReceiptForm() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(null);
   const fileInputRef = useRef(null);
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState({});
+  const [imageFile, setImageFile] = useState(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const baseUrl = import.meta.env.VITE_BASE_URL;
+        const response = await axios.get(`${baseUrl}/api/receipts/categories`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setCategories(response.data.categories);
+        setSubcategories(response.data.subcategories);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        setError("Failed to load categories");
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const newTotal = receiptData.items.reduce((sum, item) => {
@@ -27,10 +67,29 @@ function ReceiptForm() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setReceiptData({
-      ...receiptData,
-      [name]: value,
-    });
+
+    if (name === "category") {
+      setReceiptData({
+        ...receiptData,
+        category: value,
+        subcategory: "",
+      });
+    } else if (name === "subcategory") {
+      setReceiptData({
+        ...receiptData,
+        subcategory: value,
+      });
+    } else if (name === "customSubcategory") {
+      setReceiptData({
+        ...receiptData,
+        customSubcategory: value,
+      });
+    } else {
+      setReceiptData({
+        ...receiptData,
+        [name]: value,
+      });
+    }
   };
 
   const handleItemChange = (e, index) => {
@@ -63,6 +122,7 @@ function ReceiptForm() {
     if (!file) return;
 
     setIsProcessing(true);
+    setImageFile(file);
     setUploadedImage(URL.createObjectURL(file));
     try {
       const result = await Tesseract.recognize(file, "eng", {
@@ -70,7 +130,6 @@ function ReceiptForm() {
       });
 
       const text = result.data.text;
-      console.log("Extracted text:", text);
 
       // Parse the extracted text
       const lines = text.split("\n");
@@ -164,54 +223,59 @@ function ReceiptForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate credit card number
-    const creditCardNumber = receiptData.creditCardNumber;
-    const cardRegex = /^\d{16}$/;
-    if (!cardRegex.test(creditCardNumber)) {
-      setError("Credit card number must be exactly 16 digits.");
+    if (!imageFile) {
+      setError("Please upload a receipt image");
       return;
     }
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setError("Please log in first.");
-      return;
-    }
-    receiptData.total = total;
+    receiptData.subcategory =
+      receiptData.subcategory === "custom"
+        ? receiptData.customSubcategory
+        : receiptData.subcategory;
+
+    const formData = new FormData();
+    formData.append("image", imageFile);
+    formData.append("date", receiptData.date);
+    formData.append("store", receiptData.store);
+    formData.append("category", receiptData.category);
+    formData.append("subcategory", receiptData.subcategory);
+    formData.append("items", JSON.stringify(receiptData.items));
+    formData.append("total", total);
 
     try {
+      for (let pair of formData.entries()) {
+        console.log(pair[0], pair[1]);
+      }
+      console.log("Submitting receipt:", formData);
       const baseUrl = import.meta.env.VITE_BASE_URL;
       const response = await fetch(`${baseUrl}/api/receipts/create`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify(receiptData),
+        body: formData,
       });
 
       if (!response.ok) {
         throw new Error("Failed to create receipt");
       }
 
-      const data = await response.json();
       setSubmitted(true);
       setError("");
       setReceiptData({
         date: "",
         items: [{ name: "", price: "", quantity: "" }],
         store: "",
-        creditCardNumber: "",
       });
       setTotal(0);
       setUploadedImage(null);
+      setImageFile(null);
     } catch (error) {
       console.error("Error:", error);
       setError("Failed to create receipt. Please try again.");
       setSubmitted(false);
     }
   };
-
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto">
@@ -313,14 +377,51 @@ function ReceiptForm() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               />
 
-              <input
-                type="text"
-                name="creditCardNumber"
-                value={receiptData.creditCardNumber}
-                placeholder="Enter Credit Card Number"
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              />
+              <div className="space-y-4">
+                {/* Category Selection */}
+                <select
+                  name="category"
+                  value={receiptData.category}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  required
+                >
+                  <option value="">Select Category</option>
+                  {Object.entries(categories).map(([key, value]) => (
+                    <option key={key} value={value}>
+                      {key.replace("_", " ")}
+                    </option>
+                  ))}
+                </select>
+
+                {receiptData.category && (
+                  <select
+                    name="subcategory"
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    required
+                  >
+                    <option value="">Select Subcategory</option>
+                    {subcategories[receiptData.category]?.map((subcategory) => (
+                      <option key={subcategory} value={subcategory}>
+                        {subcategory.replace("_", " ")}
+                      </option>
+                    ))}
+                    <option value="custom">Other (Custom)</option>
+                  </select>
+                )}
+
+                {receiptData.subcategory === "custom" && (
+                  <input
+                    type="text"
+                    name="customSubcategory"
+                    value={receiptData.customSubcategory || ""}
+                    onChange={handleInputChange}
+                    placeholder="Enter custom subcategory"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                )}
+              </div>
 
               <div className="space-y-4">
                 {receiptData.items.map((item, index) => (
