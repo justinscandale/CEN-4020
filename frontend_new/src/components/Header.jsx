@@ -13,7 +13,11 @@ const Header = () => {
 
   return (
     <nav className="flex justify-between items-center px-8 py-4 bg-gray-800 text-white">
-      <div className="text-2xl font-bold">CEN-4020</div>
+      <Link to="/" className="no-underline">
+        <button className="text-2xl font-bold text-white hover:text-gray-300 transition-colors duration-200">
+          CEN-4020
+        </button>
+      </Link>
       <div className="flex items-center gap-4">
         {user ? (
           <>

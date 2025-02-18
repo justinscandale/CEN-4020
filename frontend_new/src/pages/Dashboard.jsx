@@ -1,15 +1,26 @@
 import React, { useEffect } from "react";
-import ReceiptForm from "../components/ReceiptForm";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
   useEffect(() => {
-    if (!localStorage.getItem("token")) {
-      navigate("/login");
+    if (!user || user.role !== "supervisor") {
+      navigate("/");
     }
-  }, [navigate]);
-  return <ReceiptForm />;
+  }, [user, navigate]);
+
+  if (!user || user.role !== "supervisor") {
+    return null;
+  }
+
+  return (
+    <div>
+      <h1>Supervisor Dashboard</h1>
+    </div>
+  );
 };
 
 export default Dashboard;
