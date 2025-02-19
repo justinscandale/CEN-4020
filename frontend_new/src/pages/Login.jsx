@@ -1,8 +1,10 @@
 // Login.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Login() {
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -31,8 +33,8 @@ function Login() {
 
       const data = await response.json();
       if (response.ok) {
-        localStorage.setItem("token", data.token);
-        navigate("/dashboard");
+        login(data);
+        navigate("/");
       }
     } catch (error) {
       console.error("Login failed:", error);

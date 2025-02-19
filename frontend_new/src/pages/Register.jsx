@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 function Register() {
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -40,8 +42,8 @@ function Register() {
       });
 
       if (response.data) {
-        localStorage.setItem("user", JSON.stringify(response.data));
-        navigate("/dashboard");
+        login(response.data);
+        navigate("/");
       }
     } catch (error) {
       console.error("Registration failed:", error.response.data);
