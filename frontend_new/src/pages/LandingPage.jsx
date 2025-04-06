@@ -36,12 +36,22 @@ const LandingPage = () => {
       );
     }
 
-    if (user.role === "supervisor") {
+    if (user.role === "supervisor" || 1) {
       return (
-        <div className="mt-10 flex justify-center">
+        <div className="mt-10 flex gap-4 justify-center">
           <Link to="/dashboard">
             <button className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
               Go to Dashboard
+            </button>
+          </Link>
+          <Link to="/approve-receipts">
+            <button className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
+              Approve Receipts
+            </button>
+          </Link>
+          <Link to="/get-reports">
+            <button className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
+              Get Reports
             </button>
           </Link>
         </div>
