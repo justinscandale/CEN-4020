@@ -19,6 +19,10 @@ ac.grant('employee')
 // Supervisor permissions (inherits employee permissions)
 ac.grant('supervisor')
   .extend('employee')
+  // Receipts
+  .readAny('receipt')
+  .updateAny('receipt')
+  .deleteAny('receipt')
   // Expense Reports
   .readAny('expenseReport')
   .updateAny('expenseReport')

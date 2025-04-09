@@ -11,6 +11,14 @@ const getReceipts = asyncHandler(async (req, res) => {
     res.status(200).json(receipts);
 });
 
+// @desc Get All Receipts for deparment
+// @route GET /api/department-receipts
+// @access Private
+const getDepartmentReceipts = asyncHandler(async (req, res) => {
+    const receipts = await Receipt.find(); //update with proper find condition! for departmen
+    res.status(200).json(receipts);
+});
+
 // @desc Create New Receipt
 // @route POST /api/receipts/create
 // @access Private
@@ -107,9 +115,32 @@ const getCategories = asyncHandler(async (req, res) => {
     });
 });
 
+// @desc Get Categories and Subcategories
+// @route PUT /api/receipts/approve
+// @access Private
+const approve = asyncHandler(async (req, res) => {
+    console.log("ok")
+    const {id} = req.body;
+    console.log(id)
+    const receipt = await Receipt.findById(id);
+    
+    if (!receipt) {
+        res.status(404);
+        throw new Error('Receipt not found');
+    }
+    else{
+        receipt.approve = true;
+        await receipt.save(); //save back to db
+        res.status(200).json({ message: 'Receipt approved successfully', receipt });
+    }
+    
+});
+
 module.exports = {
     getReceipts,
+    getDepartmentReceipts,
     setReceipt,
     deleteReceipt,
     getCategories,
+    approve
 };

@@ -54,6 +54,16 @@ const LandingPage = () => {
               Get Reports
             </button>
           </Link>
+          <Link to="/generate-report">
+            <button className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
+              Generate Report
+            </button>
+          </Link>
+          <Link to="/view-department-members">
+            <button className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
+              View Department Members
+            </button>
+          </Link>
         </div>
       );
     }

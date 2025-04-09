@@ -259,7 +259,9 @@ function ReceiptForm() {
       if (!response.ok) {
         throw new Error("Failed to create receipt");
       }
-
+      else{
+        alert("Receipt Successfully Created");
+      }
       setSubmitted(true);
       setError("");
       setReceiptData({
