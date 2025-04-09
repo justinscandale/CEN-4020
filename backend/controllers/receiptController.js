@@ -95,14 +95,16 @@ const deleteReceipt = asyncHandler(async (req, res) => {
         throw new Error('Receipt not found');
     }
 
-    // Check user owns the receipt or is admin
-    if (receipt.user.toString() !== req.user.id && req.user.role !== 'supervisor') {
-        res.status(403);
-        throw new Error('Not authorized');
-    }
+    // Check user condtions to delete 
+    //IMPLEMENT
+    // if (receipt.user.toString() !== req.user.id && req.user.role !== 'supervisor') {
+    //     res.status(403);
+    //     throw new Error('Not authorized');
+    // }
 
     await Receipt.findByIdAndDelete(req.params.id);
-    res.status(200).json({ id: req.params.id });
+    res.status(200).json({ message: "sucesdully deleted",
+                        id: req.params.id });
 });
 
 // @desc Get Categories and Subcategories

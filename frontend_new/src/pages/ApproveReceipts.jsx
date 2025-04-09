@@ -37,6 +37,29 @@ const approveClick = async (id) => {
   }
 };
 
+//event handler for delete click
+const deleteClick = async (id) => {
+  try {
+    const baseUrl = import.meta.env.VITE_BASE_URL;
+    const res = await axios.delete(`${baseUrl}/api/receipts/delete/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    if (res.data.message) {
+      alert(res.data.message);
+      setReceipts((prevReceipts) =>
+        prevReceipts.filter( (receipt) => receipt._id != id )
+        );
+    }
+  } catch (error) {
+    alert('Error deleting receipt');
+  }
+};
+
   useEffect(() => {
     if (!localStorage.getItem("token")) {
       navigate("/login");
@@ -135,7 +158,7 @@ const approveClick = async (id) => {
                           <CheckCircle className="w-4 h-4 mr-1" />
                           Approve
                         </button>
-                        <button onClick={() => alert('Delete receipt Functionality')} className="inline-flex items-center px-2 py-1 text-xs font-medium text-red-900 bg-red-100 rounded-full mt-2">
+                        <button onClick={() => deleteClick(receipt._id)} className="inline-flex items-center px-2 py-1 text-xs font-medium text-red-900 bg-red-100 rounded-full mt-2">
                           <XCircle className="w-4 h-4 mr-1" />
                           Deny
                         </button>
