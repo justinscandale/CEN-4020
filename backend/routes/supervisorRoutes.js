@@ -6,7 +6,7 @@ const {
     getEmployeeById
 } = require('../controllers/supervisorController');
 
-router.get('/employees', protect, authorize('readAny', 'profile'), getAllEmployees);
+router.get('/employees', getAllEmployees);
 router.get('/employees/:id', protect, authorize('readAny', 'profile'), getEmployeeById);
 
 module.exports = router;

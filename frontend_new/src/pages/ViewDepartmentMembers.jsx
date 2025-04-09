@@ -1,37 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { CheckCircle, XCircle, X } from "lucide-react";
 
 const ViewDepartmentMembers = () => {
   const [filter, setFilter] = useState('');
-  const members = [
-    { id: 1, name: 'John Doe', role: 'Manager' },
-    { id: 2, name: 'Jane Smith', role: 'Developer' },
-    { id: 3, name: 'Alice Johnson', role: 'Designer' },
-  ];
+  const [members, setEmployees] = useState([]);
+  const navigate = useNavigate();
 
-  const filteredMembers = members.filter(member =>
-    member.name.toLowerCase().includes(filter.toLowerCase())
-  );
+  useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      navigate("/login");
+    }
+  }, [navigate]);
+
+  useEffect(() => {
+    const fetchDeptEmployees = async () => {
+      try {
+        const baseUrl = import.meta.env.VITE_BASE_URL;
+        const response = await axios.get(`${baseUrl}/api/supervisor/employees`);
+        setEmployees(response.data.data);
+        console.log(response);
+      } catch (err) {
+          //handle error
+      }
+    };
+
+    fetchDeptEmployees();
+  }, []);
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <h1 className="text-3xl font-bold text-center text-indigo-600 mb-4">Department Members</h1>
-      <input
-        type="text"
-        placeholder="Filter by name"
-        value={filter}
-        onChange={e => setFilter(e.target.value)}
-        className="mb-4 p-2 border border-gray-300 rounded w-full"
-      />
-      <ul className="bg-white shadow-md rounded-lg p-6">
-        {filteredMembers.map(member => (
-          <li key={member.id} className="mb-2">
-            <div className="flex justify-between items-center">
-              <span>{member.name} - {member.role}</span>
-              <button className="text-indigo-600 hover:underline">View</button>
-            </div>
-          </li>
-        ))}
-      </ul>
+      {members.map((member, index) => (
+        <div key={index} className="member-item">
+          <p>Name: {member.firstName + " " + member.lastName}</p>
+          <p>Email: {member.email}</p>
+          <p>Dept: {member.department ? member.department.name : "Not Assigned"}</p>
+          <br/>
+        </div>
+      ))}
     </div>
   );
 };
