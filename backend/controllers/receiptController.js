@@ -119,7 +119,6 @@ const getCategories = asyncHandler(async (req, res) => {
 // @route PUT /api/receipts/approve
 // @access Private
 const approve = asyncHandler(async (req, res) => {
-    console.log("ok")
     const {id} = req.body;
     console.log(id)
     const receipt = await Receipt.findById(id);
@@ -129,7 +128,7 @@ const approve = asyncHandler(async (req, res) => {
         throw new Error('Receipt not found');
     }
     else{
-        receipt.approve = true;
+        receipt.approval = true;
         await receipt.save(); //save back to db
         res.status(200).json({ message: 'Receipt approved successfully', receipt });
     }
