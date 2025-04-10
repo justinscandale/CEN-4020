@@ -151,7 +151,12 @@ const deleteClick = async (id) => {
                   </div>
                   <div className="absolute top-10 right-2 flex flex-col">
                     {receipt.approval ? (
-                      <></>
+                      <>
+                        <button onClick={() => deleteClick(receipt._id)} className="inline-flex items-center px-2 py-1 text-xs font-medium text-red-900 bg-red-100 rounded-full mt-2">
+                          <XCircle className="w-4 h-4 mr-1" />
+                          Delete
+                        </button>
+                      </>
                     ) : (
                       <>
                         <button onClick={() => approveClick(receipt._id)} className="inline-flex items-center px-2 py-1 text-xs font-medium text-white-900 bg-green-100 rounded-full">
