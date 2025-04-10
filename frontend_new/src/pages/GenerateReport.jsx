@@ -6,9 +6,9 @@ const GenerateReport = async (reportData) => {
   try {
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const response = await axios.post(`${baseUrl}/api/reports`, reportData);
-    console.log('Report created successfully:', response.data);
+    return(`Created Report: ${response.data.name}`)
   } catch (error) {
-    console.error('Error creating report:', error.response ? error.response.data : error.message);
+    return("Failed to Create Report")
   }
 };
 
@@ -38,7 +38,15 @@ const GenerateReportComponent = () => {
       expenseType: expenseType,
       }
 
-    await GenerateReport(reportData);
+    const res = await GenerateReport(reportData);
+
+    // setReportName('');
+    // setStartDate('');
+    // setEndDate('');
+    // setExpenseType([]);
+    // setDescription('');
+    //notify user of outcome
+    alert(res);
   };
 
   return (

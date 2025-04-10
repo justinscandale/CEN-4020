@@ -6,7 +6,6 @@ const asyncHandler = require('express-async-handler');
 const createReport = async (req, res) => {
   try {
     const {name, description, startDate, endDate, expenseType } = req.body;
-    console.log(name, description, startDate, endDate, expenseType);
     if( !name || !description || !startDate )
     {
         throw new Error("input not valid")
@@ -21,7 +20,7 @@ const createReport = async (req, res) => {
         // Calculate total amount and gather purchase names
         const totalAmount = receipts.reduce((sum, receipt) => (sum + (receipt.total ? receipt.total : 0)), 0);
         const purchaseNames = [...new Set(receipts.map(receipt => (receipt.store ? receipt.store : "Unamed" )))];
-        
+
         // Create report data
         const reportData = {
             name,
