@@ -41,7 +41,28 @@ const getEmployeeById = asyncHandler(async (req, res) => {
     });
 });
 
+// @desc    Get deptartment employees
+// @route   GET /api/supervisor/deptemployees
+// @access  Private/Supervisor
+const getDeptEmployees = asyncHandler(async (req, res) => {
+    const employees = await Employee.find({})
+        .select('-password')
+        .populate('department', 'name description');
+
+    if (!employees) {
+        res.status(404);
+        throw new Error('No employees found');
+    }
+
+    res.status(200).json({
+        success: true,
+        count: employees.length,
+        data: employees
+    });
+});
+
 module.exports = {
     getAllEmployees,
-    getEmployeeById
+    getEmployeeById,
+    getDeptEmployees
 };

@@ -11,6 +11,8 @@ import { AuthProvider } from "./context/AuthContext";
 import ReceiptForm from "./pages/ReceiptForm";
 import ApproveReceipts from "./pages/ApproveReceipts";
 import GetReports from "./pages/GetReports";
+import GenerateReport from "./pages/GenerateReport";
+import ViewDepartmentMembers from "./pages/ViewDepartmentMembers";
 
 function App() {
   return (
@@ -29,6 +31,8 @@ function App() {
               <Route path="/receipts/new" element={<ReceiptForm />} />
               <Route path="/approve-receipts" element={<ApproveReceipts/>} />
               <Route path="/get-reports" element={<GetReports />} />
+              <Route path="/generate-report" element={<GenerateReport />} />
+              <Route path="/view-department-members" element={<ViewDepartmentMembers />} />
             </Routes>
           </header>
         </Router>
