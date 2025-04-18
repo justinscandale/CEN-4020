@@ -1,7 +1,6 @@
 const asyncHandler = require('express-async-handler');
-const {Receipt, categories, defaultSubcategories} = require('../models/receiptModel');
+const { Receipt, categories, defaultSubcategories } = require('../models/receiptModel');
 const imagekit = require('../config/imagekit');
-
 
 // @desc Get All Receipts
 // @route GET /api/receipts
@@ -11,11 +10,11 @@ const getReceipts = asyncHandler(async (req, res) => {
     res.status(200).json(receipts);
 });
 
-// @desc Get All Receipts for deparment
+// @desc Get All Receipts for department
 // @route GET /api/department-receipts
 // @access Private
 const getDepartmentReceipts = asyncHandler(async (req, res) => {
-    const receipts = await Receipt.find(); //update with proper find condition! for departmen
+    const receipts = await Receipt.find(); // TODO: Filter by department
     res.status(200).json(receipts);
 });
 
@@ -23,14 +22,13 @@ const getDepartmentReceipts = asyncHandler(async (req, res) => {
 // @route POST /api/receipts/create
 // @access Private
 const setReceipt = asyncHandler(async (req, res) => {
-    const { date, total, store, category, subcategory } = req.body;
+    const { date, total, store, category, subcategory, justification, manuallyCreated } = req.body;
     const items = JSON.parse(req.body.items);
-    const image = req.file;
     const user_id = req.user.id;
+    const image = req.file;
 
     // Validate required fields
     if (!date || !items || !total || !store || !category || !subcategory) {
-        console.log(date, items, total, store, category, subcategory);
         res.status(400);
         throw new Error('Missing required fields');
     }
@@ -55,16 +53,23 @@ const setReceipt = asyncHandler(async (req, res) => {
     }
 
     try {
-        const uploadResponse = await new Promise((resolve, reject) => {
-            imagekit.upload({
-                file: image.buffer,
-                fileName: `receipt-${Date.now()}`,
-                folder: '/receipts',
-            }, (error, result) => {
-                if (error) reject(error);
-                else resolve(result);
+        let imageUrl = null;
+
+        if (image && image.buffer) {
+            // Upload to ImageKit
+            const uploadResponse = await new Promise((resolve, reject) => {
+                imagekit.upload({
+                    file: image.buffer,
+                    fileName: `receipt-${Date.now()}`,
+                    folder: '/receipts',
+                }, (error, result) => {
+                    if (error) reject(error);
+                    else resolve(result);
+                });
             });
-        });
+
+            imageUrl = uploadResponse.url;
+        }
 
         const receipt = await Receipt.create({
             date,
@@ -74,7 +79,9 @@ const setReceipt = asyncHandler(async (req, res) => {
             category,
             subcategory,
             user: user_id,
-            image: uploadResponse.url
+            image: imageUrl,
+            manuallyCreated: manuallyCreated === 'true',
+            justification: manuallyCreated === 'true' ? justification : undefined
         });
 
         res.status(201).json(receipt);
@@ -89,25 +96,21 @@ const setReceipt = asyncHandler(async (req, res) => {
 // @access Private
 const deleteReceipt = asyncHandler(async (req, res) => {
     const receipt = await Receipt.findById(req.params.id);
-    
+
     if (!receipt) {
         res.status(404);
         throw new Error('Receipt not found');
     }
-    if(receipt.report){
-        res.status(404);
-        throw new Error('Rceipt in report');
-    }
-    // Check user condtions to delete 
-    //IMPLEMENT
-    // if (receipt.user.toString() !== req.user.id && req.user.role !== 'supervisor') {
-    //     res.status(403);
-    //     throw new Error('Not authorized');
-    // }
 
+    if (receipt.report) {
+        res.status(400);
+        throw new Error('Receipt is part of a report and cannot be deleted');
+    }
+
+    // TODO: Add role-based access check here
     await Receipt.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "sucesdully deleted",
-                        id: req.params.id });
+
+    res.status(200).json({ message: "Successfully deleted", id: req.params.id });
 });
 
 // @desc Get Categories and Subcategories
@@ -120,24 +123,23 @@ const getCategories = asyncHandler(async (req, res) => {
     });
 });
 
-// @desc Get Categories and Subcategories
+// @desc Approve Receipt
 // @route PUT /api/receipts/approve
 // @access Private
 const approve = asyncHandler(async (req, res) => {
-    const {id} = req.body;
-    console.log(id)
+    const { id } = req.body;
+
     const receipt = await Receipt.findById(id);
-    
+
     if (!receipt) {
         res.status(404);
         throw new Error('Receipt not found');
     }
-    else{
-        receipt.approval = true;
-        await receipt.save(); //save back to db
-        res.status(200).json({ message: 'Receipt approved successfully', receipt });
-    }
-    
+
+    receipt.approval = true;
+    await receipt.save();
+
+    res.status(200).json({ message: 'Receipt approved successfully', receipt });
 });
 
 module.exports = {

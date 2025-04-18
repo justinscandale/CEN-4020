@@ -76,7 +76,7 @@ const receiptSchema = mongoose.Schema({
    },
    image: {
     type: String,  
-    required: [true, 'Please add an image']
+    //optional: [true, 'Please add an image']
 },
 }, 
 {
