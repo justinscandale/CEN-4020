@@ -94,7 +94,10 @@ const deleteReceipt = asyncHandler(async (req, res) => {
         res.status(404);
         throw new Error('Receipt not found');
     }
-
+    if(receipt.report){
+        res.status(404);
+        throw new Error('Rceipt in report');
+    }
     // Check user condtions to delete 
     //IMPLEMENT
     // if (receipt.user.toString() !== req.user.id && req.user.role !== 'supervisor') {

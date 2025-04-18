@@ -12,6 +12,7 @@ const LandingPage = () => {
       try {
         const userData = JSON.parse(userStr);
         setUser(userData);
+        console.log(userData)
       } catch (error) {
         console.error("Error parsing user data:", error);
       }

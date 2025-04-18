@@ -14,11 +14,25 @@ const ViewDepartmentMembers = () => {
     }
   }, [navigate]);
 
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const userData = JSON.parse(userStr);
+        setUser(userData);
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     const fetchDeptEmployees = async () => {
       try {
         const baseUrl = import.meta.env.VITE_BASE_URL;
-        const response = await axios.get(`${baseUrl}/api/supervisor/employees`);
+        const response = await axios.get(`${baseUrl}/api/supervisor/employees/dept?departmentId=${user.department._id}`);
         setEmployees(response.data.data);
         console.log(response);
       } catch (err) {
@@ -27,7 +41,7 @@ const ViewDepartmentMembers = () => {
     };
 
     fetchDeptEmployees();
-  }, []);
+  }, [user]);
 
 
   return (

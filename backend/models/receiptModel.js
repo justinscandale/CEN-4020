@@ -70,6 +70,10 @@ const receiptSchema = mongoose.Schema({
        type: Number,
        required: [true, 'Please add a total']
    },
+   report: {
+ type: Boolean,
+ default: false
+   },
    image: {
     type: String,  
     required: [true, 'Please add an image']

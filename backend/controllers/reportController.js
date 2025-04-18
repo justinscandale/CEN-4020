@@ -17,6 +17,13 @@ const createReport = async (req, res) => {
                 ...(endDate && { $lte: new Date(endDate) })
             }
         });
+
+        const receiptIds = receipts.map(receipt => receipt._id);
+        await Receipt.updateMany(
+          { _id: { $in: receiptIds } },
+          { $set: { report: true } }
+        );
+
         // Calculate total amount and gather purchase names
         const totalAmount = receipts.reduce((sum, receipt) => (sum + (receipt.total ? receipt.total : 0)), 0);
         const purchaseNames = [...new Set(receipts.map(receipt => (receipt.store ? receipt.store : "Unamed" )))];
