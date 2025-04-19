@@ -10,6 +10,30 @@ const ReviewReceipts = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const navigate = useNavigate();
 
+
+//event handler for delete click
+const deleteClick = async (id) => {
+  try {
+    const baseUrl = import.meta.env.VITE_BASE_URL;
+    const res = await axios.delete(`${baseUrl}/api/receipts/delete/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    if (res.data.message) {
+      alert(res.data.message);
+      setReceipts((prevReceipts) =>
+        prevReceipts.filter( (receipt) => receipt._id != id )
+        );
+    }
+  } catch (error) {
+    alert('Error deleting receipt');
+  }
+};
+
   useEffect(() => {
     if (!localStorage.getItem("token")) {
       navigate("/login");
@@ -88,12 +112,21 @@ const ReviewReceipts = () => {
                         Approved
                       </span>
                     ) : (
-                      <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">
+                      <>
+                        <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-yellow-800 bg-yellow-100 rounded-full">
                         <XCircle className="w-4 h-4 mr-1" />
                         Pending
                       </span>
+                      <div className="absolute top-8 right-2">
+                      <button onClick ={ () => deleteClick(receipt._id) }className="inline-flex items-center px-2 py-1 text-xs font-medium text-red-900 bg-red-100 rounded-full">
+                        <XCircle className="w-4 h-4 mr-1" />
+                        Delete 
+                      </button>
+                  </div>
+                  </>
                     )}
                   </div>
+
                 </div>
 
                 {/* Receipt Details */}

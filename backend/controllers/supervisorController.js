@@ -41,7 +41,37 @@ const getEmployeeById = asyncHandler(async (req, res) => {
     });
 });
 
+// @desc    Get deptartment employees
+// @route   GET /api/supervisor/deptemployees
+// @access  Private/Supervisor
+const getDeptEmployees = asyncHandler(async (req, res) => {
+    // Get department ID from request parameters or query
+    const departmentId = req.params.departmentId || req.query.departmentId;
+    console.log(req)
+    if (!departmentId) {
+        res.status(400);
+        throw new Error('Department ID is required');
+    }
+
+    // Find employees with the specified department ID
+    const employees = await Employee.find({ department: departmentId })
+        .select('-password')
+        .populate('department', 'name description');
+    
+    if (!employees || employees.length === 0) {
+        res.status(404);
+        throw new Error('No employees found for this department');
+    }
+    
+    res.status(200).json({
+        success: true,
+        count: employees.length,
+        data: employees
+    });
+});
+
 module.exports = {
     getAllEmployees,
-    getEmployeeById
+    getEmployeeById,
+    getDeptEmployees
 };
