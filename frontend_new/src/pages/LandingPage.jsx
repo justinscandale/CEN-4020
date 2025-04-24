@@ -12,7 +12,6 @@ const LandingPage = () => {
       try {
         const userData = JSON.parse(userStr);
         setUser(userData);
-        console.log(userData)
       } catch (error) {
         console.error("Error parsing user data:", error);
       }
@@ -45,21 +44,23 @@ const LandingPage = () => {
               Go to Dashboard
             </button>
           </Link>
-          <Link to="/approve-receipts">
-            <button className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
-              Approve Receipts
-            </button>
-          </Link>
-          <Link to="/get-reports">
-            <button className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
-              Get Reports
-            </button>
-          </Link>
-          <Link to="/generate-report">
-            <button className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
-              Generate Report
-            </button>
-          </Link>
+          {user.role === "supervisor" && <>
+              <Link to="/approve-receipts">
+                <button className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
+                  Approve Receipts
+                </button>
+              </Link>
+              <Link to="/get-reports">
+                <button className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
+                  Get Reports
+                </button>
+              </Link>
+              <Link to="/generate-report">
+                <button className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
+                  Generate Report
+                </button>
+              </Link>
+          </>}
           <Link to="/view-department-members">
             <button className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
               View Department Members
