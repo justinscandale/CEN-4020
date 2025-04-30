@@ -5,7 +5,9 @@ const {
   getAllReports,
   getReportById,
   updateReport,
-  deleteReport
+  deleteReport,
+  updateReportStatus,
+  requestReportChanges
 } = require('../controllers/reportController');
 
 // Route to create a new report
@@ -22,5 +24,11 @@ router.put('/:id', updateReport);
 
 // Route to delete a report by ID
 router.delete('/:id', deleteReport);
+
+//Route to update report by ID
+router.post('/status',updateReportStatus);
+
+// Route to request changes to a report
+router.post('/request-changes', requestReportChanges);
 
 module.exports = router;

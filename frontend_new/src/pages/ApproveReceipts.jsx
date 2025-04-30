@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle, XCircle, X } from "lucide-react";
+import { CheckCircle, XCircle, X, Flag } from "lucide-react";
 
 //protect through middleware
 const ApproveReceipts = () => {
@@ -60,6 +60,31 @@ const deleteClick = async (id) => {
   }
 };
 
+//event handler for flag click
+const flagClick = async (id) => {
+  try {
+    const baseUrl = import.meta.env.VITE_BASE_URL;
+    const res = await axios.post(`${baseUrl}/api/receipts/flag`, 
+      { id },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    if (res.data.message) {
+      setReceipts((prevReceipts) =>
+        prevReceipts.map((receipt) =>
+          receipt._id === id ? { ...receipt, flag: true } : receipt
+        )
+      );
+    }
+  } catch (error) {
+    alert('Error flagging receipt');
+  }
+};
+
   useEffect(() => {
     if (!localStorage.getItem("token")) {
       navigate("/login");
@@ -76,11 +101,17 @@ const deleteClick = async (id) => {
           },
         });
         console.log(response);
-        if(!response || !response.data)
-        {
+        if(!response || !response.data) {
           throw new error("error on fetch department receipts");
         }
-        setReceipts(response.data);
+        // Sort receipts by flagged status, then by date
+        const sortedReceipts = response.data.sort((a, b) => {
+          if (b.flag !== a.flag) {
+            return b.flag - a.flag; // Sort by flag status
+          }
+          return new Date(b.date) - new Date(a.date); // Sort by date
+        });
+        setReceipts(sortedReceipts);
         setLoading(false);
       } catch (err) {
         setError(err.response?.data?.message || "Error fetching receipts");
@@ -149,6 +180,45 @@ const deleteClick = async (id) => {
                       </span>
                     )}
                   </div>
+                  <div className="absolute top-2 left-2">
+                    {receipt.flag ? (
+                      <Flag className="w-6 h-6 text-red-500" />
+                    ) : (
+                      <button
+                        onClick={() => flagClick(receipt._id)}
+                        className="inline-flex items-center px-3 py-1 text-xs font-medium text-white bg-blue-500 rounded-full shadow-md hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                      >
+                        <CheckCircle className="w-4 h-4 mr-1" />
+                        Flag
+                      </button>
+                    )}
+                    {/* Dollar Symbol */}
+                    <div 
+                      className={`mt-1 ${receipt.reimburse ? 'text-green-500' : 'text-red-500'}`}
+                      onClick={async () => {
+                        if (!receipt.reimburse) {
+                          try {
+                            const baseUrl = import.meta.env.VITE_BASE_URL;
+                            await axios.post(`${baseUrl}/api/receipts/reimburse`, { id: receipt._id }, {
+                              headers: {
+                                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                              },
+                            });
+                            alert('Reimbursement request has been sent to the finance team.');
+                            setReceipts((prevReceipts) =>
+                              prevReceipts.map((r) =>
+                                r._id === receipt._id ? { ...r, reimburse: true } : r
+                              )
+                            );
+                          } catch (error) {
+                            alert('Error sending reimbursement request');
+                          }
+                        }
+                      }}
+                    >
+                      $
+                    </div>
+                  </div>
                   <div className="absolute top-10 right-2 flex flex-col">
                     {receipt.approval ? (
                       <>
@@ -168,6 +238,7 @@ const deleteClick = async (id) => {
                           Deny
                         </button>
                       </>
+                      
                     )}
                   </div>
                 </div>

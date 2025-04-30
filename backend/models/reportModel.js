@@ -18,6 +18,14 @@ const reportSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.Mixed,
     required: false,
     default: {}
+  },
+  status:{
+    type: String,
+    default: "Pending"
+  },
+  requested_changes:{
+    type: String,
+    default: "No changes requested"
   }
 });
 
