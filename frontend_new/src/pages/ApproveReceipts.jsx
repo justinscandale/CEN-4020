@@ -56,7 +56,7 @@ const deleteClick = async (id) => {
         );
     }
   } catch (error) {
-    alert('Error deleting receipt');
+    alert('Error deleting receipt: receipt in report');
   }
 };
 

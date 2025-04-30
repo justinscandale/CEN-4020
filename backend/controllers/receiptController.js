@@ -102,10 +102,10 @@ const deleteReceipt = asyncHandler(async (req, res) => {
         throw new Error('Receipt not found');
     }
 
-    if (receipt.report) {
-        res.status(400);
-        throw new Error('Receipt is part of a report and cannot be deleted');
-    }
+    // if (receipt.report) {
+    //     res.status(400).json({ message: "Receipt is part of a report and cannot be deleted" });
+    //     throw new Error('Receipt is part of a report and cannot be deleted');
+    // }
 
     // TODO: Add role-based access check here
     await Receipt.findByIdAndDelete(req.params.id);
