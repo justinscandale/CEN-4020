@@ -67,11 +67,85 @@ const ViewDepartmentMembers = () => {
     }
   };
 
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+
+  const createUser = async () => {
+    try {
+      let departmentId = user && user.department ? user.department._id : null;
+      if (!departmentId) {
+        //default to engineer department ID
+        departmentId = '6801d0806fb18e09c4272673';
+      }
+      const baseUrl = import.meta.env.VITE_BASE_URL;
+      const response = await axios.post(`${baseUrl}/api/auth/register`, { firstName, lastName, email, password, departmentId });
+      alert('User created successfully');
+      const newUser = response.data;
+      setEmployees([newUser, ...members]);
+      setFirstName('');
+      setLastName('');
+      setEmail('');
+      setPassword('');
+    } catch (error) {
+      alert('Error creating user');
+    }
+  };
+
+  const deleteUser = async (userId) => {
+    try {
+      await axios.delete(`/api/users/delete/${userId}`);
+      alert('User deleted successfully');
+    } catch (error) {
+      alert('Error deleting user');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-center text-indigo-600 mb-8">{user && user.department && user.department.name} Department Members</h1>
-      {members.map((member, index) => (
+        <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
+          <h2 className="text-2xl font-bold text-indigo-600 mb-4">User Management</h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <input
+              type="text"
+              placeholder="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className="border p-2 rounded w-full"
+            />
+            <input
+              type="text"
+              placeholder="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              className="border p-2 rounded w-full"
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="border p-2 rounded w-full"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="border p-2 rounded w-full"
+            />
+            <button
+              onClick={createUser}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full"
+            >
+              Create User
+            </button>
+          </div>
+        </div>
+        {members.map((member, index) => (
           <div key={index} className="bg-white shadow-lg rounded-lg p-6 mb-6 transition-transform transform hover:scale-105">
             {editingIndex === index ? (
               <>
@@ -121,8 +195,8 @@ const ViewDepartmentMembers = () => {
                 )}
               </>
             )}
-        </div>
-      ))}
+          </div>
+        ))}
       </div>
     </div>
   );
