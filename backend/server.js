@@ -7,6 +7,8 @@ const authRoutes = require("./routes/authRoutes");
 const receiptRoutes = require("./routes/receiptRoutes");
 const reportRoutes = require('./routes/reportRoutes');
 const recurringExpenseRoutes = require('./routes/recurringExpenseRoutes')
+const nodemailer = require('nodemailer');
+const emailRoutes = require('./routes/emailRoutes');
 const app = express();
 
 // Middleware
@@ -29,6 +31,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/receipts", receiptRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/recurring-expenses', recurringExpenseRoutes);
+app.use('/api/send-email', emailRoutes);
+
 // Start Server
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Server is running on port ${port}`));

@@ -14,6 +14,7 @@ import GetReports from "./pages/GetReports";
 import GenerateReport from "./pages/GenerateReport";
 import ViewDepartmentMembers from "./pages/ViewDepartmentMembers";
 import RecurringExpenses from "./pages/RecurringExpenses";
+import ExpenseAnalytics from "./pages/ExpenseAnalytics";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
 
           <header className="App-header">
             <Routes>
+              <Route path="/expense-analytics" element={<ExpenseAnalytics/>}/>
               <Route path="/" element={<LandingPage />} />
               <Route path="/dashboard" element={<DashBoard />} />
               <Route path="/login" element={<Login />} />
