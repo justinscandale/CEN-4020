@@ -85,6 +85,22 @@ const flagClick = async (id) => {
   }
 };
 
+const handleReimburseToggle = async (receiptId) => {
+  try {
+    const response = await axios.post('/api/send-email', {
+      email: 'your-email@example.com',
+      subject: 'Reimbursement Request',
+      text: `Reimbursement has been toggled for receipt ID: ${receiptId}`,
+    });
+
+    if (response.status === 200) {
+      console.log('Email sent successfully');
+    }
+  } catch (error) {
+    console.error('Error sending email:', error);
+  }
+};
+
   useEffect(() => {
     if (!localStorage.getItem("token")) {
       navigate("/login");
@@ -204,6 +220,14 @@ const flagClick = async (id) => {
                                 Authorization: `Bearer ${localStorage.getItem("token")}`,
                               },
                             });
+
+                            // // Call the email sending endpoint
+                            // await axios.post(`${baseUrl}/api/send-email`, {
+                            //   email: 'your-email@example.com',
+                            //   subject: 'Reimbursement Request',
+                            //   text: `Reimbursement has been toggled for receipt ID: ${receipt._id}`,
+                            // });
+
                             alert('Reimbursement request has been sent to the finance team.');
                             setReceipts((prevReceipts) =>
                               prevReceipts.map((r) =>

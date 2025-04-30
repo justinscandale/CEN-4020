@@ -46,6 +46,11 @@ const LandingPage = () => {
               Recurring Expenses
             </button>
           </Link>
+          <Link to="/expense-analytics">
+          <button className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
+            Expense Analytics
+          </button>
+          </Link>
               <Link to="/approve-receipts">
                 <button className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
                   Approve Receipts

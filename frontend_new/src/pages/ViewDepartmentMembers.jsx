@@ -71,7 +71,7 @@ const ViewDepartmentMembers = () => {
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-center text-indigo-600 mb-8">{user && user.department && user.department.name} Department Members</h1>
-        {members.map((member, index) => (
+      {members.map((member, index) => (
           <div key={index} className="bg-white shadow-lg rounded-lg p-6 mb-6 transition-transform transform hover:scale-105">
             {editingIndex === index ? (
               <>
@@ -121,8 +121,8 @@ const ViewDepartmentMembers = () => {
                 )}
               </>
             )}
-          </div>
-        ))}
+        </div>
+      ))}
       </div>
     </div>
   );
