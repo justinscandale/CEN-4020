@@ -53,7 +53,7 @@ const GetReportsComponent = () => {
     // Include receipts info in the PDF
     report.info.receiptsInfo.forEach((receipt, index) => {
       const yOffset = 40 + (index * 10);
-      doc.text(`Receipt ${index + 1}: ${receipt.store}, ${receipt.total}, ${receipt.date.toLocaleDateString()}`, 10, yOffset);
+      doc.text(`Receipt ${index + 1}: ${receipt.store}, ${receipt.total}, ${receipt.date.slice(0,10)}`, 10, yOffset);
     });
     doc.save(`${report.name}.pdf`);
   };
