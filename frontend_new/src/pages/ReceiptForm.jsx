@@ -19,7 +19,7 @@ function ReceiptForm() {
   }, [user, navigate]);
 
   const [receiptData, setReceiptData] = useState({
-    date: "",
+    date: new Date().toISOString().split('T')[0],
     items: [{ name: "", price: "", quantity: "" }],
     store: "",
     category: "",
@@ -165,6 +165,8 @@ function ReceiptForm() {
         "card",
         "credit",
         "debit",
+        "tota]",
+        "total["
       ];
 
       lines.forEach((line) => {

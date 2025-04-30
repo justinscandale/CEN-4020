@@ -23,7 +23,10 @@ const receiptSchema = mongoose.Schema({
        type: Date,
        required: [true, 'Please add a date']
    },
-
+   reimburse:{
+    type: Boolean,
+    default: false
+   },
    store: {
        type: String,
        required: [true, 'Please add a store name']
@@ -59,7 +62,10 @@ const receiptSchema = mongoose.Schema({
        type: Boolean,
        default: false,
    },
-   
+   flag:{
+    type: Boolean,
+    default: false,
+   },
    user: {
        type: mongoose.Schema.Types.ObjectId,
        ref: 'User',

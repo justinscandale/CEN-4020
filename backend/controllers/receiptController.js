@@ -142,11 +142,51 @@ const approve = asyncHandler(async (req, res) => {
     res.status(200).json({ message: 'Receipt approved successfully', receipt });
 });
 
+// @desc Flag Receipt
+// @route POST /api/receipts/flag
+// @access Private
+const flagReceipt = asyncHandler(async (req, res) => {
+    const { id } = req.body;
+
+    const receipt = await Receipt.findById(id);
+
+    if (!receipt) {
+        res.status(404);
+        throw new Error('Receipt not found');
+    }
+
+    receipt.flag = !receipt.flag; // Toggle the flag status
+    await receipt.save();
+
+    res.status(200).json({ message: 'Receipt flag status updated', receipt });
+});
+
+// @desc Reimburse Receipt
+// @route POST /api/receipts/reimburse
+// @access Private
+const reimburseReceipt = asyncHandler(async (req, res) => {
+    const { id } = req.body;
+
+    const receipt = await Receipt.findById(id);
+
+    if (!receipt) {
+        res.status(404);
+        throw new Error('Receipt not found');
+    }
+
+    receipt.reimburse = true;
+    await receipt.save();
+
+    res.status(200).json({ message: 'Reimbursement request sent successfully', receipt });
+});
+
 module.exports = {
     getReceipts,
     getDepartmentReceipts,
     setReceipt,
     deleteReceipt,
     getCategories,
-    approve
+    approve,
+    flagReceipt,
+    reimburseReceipt
 };

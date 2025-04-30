@@ -39,12 +39,13 @@ const LandingPage = () => {
     if (user.role === "supervisor" || 1) {
       return (
         <div className="mt-10 flex gap-4 justify-center">
-          <Link to="/dashboard">
+
+          {user.role === "supervisor" && <>
+            <Link to="/recurring-expenses">
             <button className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
-              Go to Dashboard
+              Recurring Expenses
             </button>
           </Link>
-          {user.role === "supervisor" && <>
               <Link to="/approve-receipts">
                 <button className="px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
                   Approve Receipts

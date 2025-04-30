@@ -11,7 +11,9 @@ const {
     setReceipt,
     deleteReceipt,
     getCategories,
-    approve
+    approve,
+    flagReceipt,
+    reimburseReceipt
     } = require("../controllers/receiptController");
 
 router.get('/get', protect, getReceipts);
@@ -20,6 +22,7 @@ router.delete("/delete/:id", deleteReceipt);
 router.get("/categories", protect, getCategories);
 router.get('/getdepartment',protect, getDepartmentReceipts)
 router.post('/approve', approve)
-
+router.post('/flag', flagReceipt);
+router.post('/reimburse', protect, reimburseReceipt);
 
 module.exports = router;

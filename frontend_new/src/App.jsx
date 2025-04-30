@@ -13,6 +13,7 @@ import ApproveReceipts from "./pages/ApproveReceipts";
 import GetReports from "./pages/GetReports";
 import GenerateReport from "./pages/GenerateReport";
 import ViewDepartmentMembers from "./pages/ViewDepartmentMembers";
+import RecurringExpenses from "./pages/RecurringExpenses";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
               <Route path="/get-reports" element={<GetReports />} />
               <Route path="/generate-report" element={<GenerateReport />} />
               <Route path="/view-department-members" element={<ViewDepartmentMembers />} />
+              <Route path="/recurring-expenses" element={<RecurringExpenses/>}/>
             </Routes>
           </header>
         </Router>

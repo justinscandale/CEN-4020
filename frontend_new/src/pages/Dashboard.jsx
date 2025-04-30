@@ -10,6 +10,9 @@ const Dashboard = () => {
     if (!user || user.role !== "supervisor") {
       navigate("/");
     }
+    if(user.role==="supervisor"){
+      navigate("/");
+    }
   }, [user, navigate]);
 
   if (!user || user.role !== "supervisor") {
@@ -19,8 +22,8 @@ const Dashboard = () => {
   return (
     <div>
       <h1>Supervisor Dashboard</h1>
-      <button onClick={() => navigate('/get-reports')} className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
-        Get Reports
+      <button onClick={() => navigate('/')} className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+        Dashboard
       </button>
     </div>
   );

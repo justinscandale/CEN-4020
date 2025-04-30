@@ -70,8 +70,35 @@ const getDeptEmployees = asyncHandler(async (req, res) => {
     });
 });
 
+// @desc    Update employee details
+// @route   PUT /api/supervisor/employees/:id
+// @access  Private/Supervisor
+const updateEmployee = asyncHandler(async (req, res) => {
+    const { firstName, lastName, email, role } = req.body;
+
+    const employee = await Employee.findById(req.params.id);
+
+    if (!employee) {
+        res.status(404);
+        throw new Error('Employee not found');
+    }
+
+    employee.firstName = firstName || employee.firstName;
+    employee.lastName = lastName || employee.lastName;
+    employee.email = email || employee.email;
+    employee.role = role || employee.role;
+    
+    await employee.save();
+
+    res.status(200).json({
+        success: true,
+        data: employee
+    });
+});
+
 module.exports = {
     getAllEmployees,
     getEmployeeById,
-    getDeptEmployees
+    getDeptEmployees,
+    updateEmployee
 };
